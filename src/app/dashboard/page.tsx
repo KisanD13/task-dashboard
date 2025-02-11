@@ -5,21 +5,12 @@ import { RecentActivity } from "@/components/dashboard/RecentActivity";
 import { TaskStatistics } from "@/components/dashboard/TaskStatistics";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Task } from "@/types/task";
+import { AddTaskDrawer } from "@/components/dashboard/AddTaskDrawer";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 // Types that will match our future backend schema
-interface Task {
-  id: string;
-  title: string;
-  description?: string;
-  dueDate: string;
-  status: "pending" | "completed" | "in_progress";
-  priority: "low" | "medium" | "high";
-  createdAt: string;
-  updatedAt: string;
-  userId: string; // For authentication
-  categoryId?: string; // For task categorization
-}
-
 interface Activity {
   id: string;
   type: "created" | "completed" | "updated" | "deleted";
@@ -47,7 +38,7 @@ const mockTasks: Task[] = [
     title: "Review project proposal",
     description: "Review and provide feedback on new client proposal",
     dueDate: new Date().toISOString().split("T")[0], // Today
-    status: "in_progress",
+    status: "pending",
     priority: "medium",
     createdAt: "2024-03-14",
     updatedAt: "2024-03-14",
@@ -120,24 +111,40 @@ const mockActivities: Activity[] = [
 ];
 
 export default function DashboardPage() {
-  // const [date, setDate] = useState<Date | undefined>(new Date());
+  const [tasks, setTasks] = useState<Task[]>(mockTasks);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const todayTasks = mockTasks.filter(
+  const todayTasks = tasks.filter(
     (task) =>
       new Date(task.dueDate).toDateString() === new Date().toDateString()
   );
 
-  const tomorrowTasks = mockTasks.filter((task) => {
+  const tomorrowTasks = tasks.filter((task) => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     return new Date(task.dueDate).toDateString() === tomorrow.toDateString();
   });
 
-  const futureTasks = mockTasks.filter((task) => {
+  const futureTasks = tasks.filter((task) => {
     const future = new Date();
     future.setDate(future.getDate() + 2);
     return new Date(task.dueDate) >= future;
   });
+
+  const addTask = (newTask: Task) => {
+    setTasks((prevTasks) => [...prevTasks, newTask]);
+    // When you have API:
+    // try {
+    //   const response = await fetch('/api/tasks', {
+    //     method: 'POST',
+    //     body: JSON.stringify(newTask)
+    //   });
+    //   const savedTask = await response.json();
+    //   setTasks(prevTasks => [...prevTasks, savedTask]);
+    // } catch (error) {
+    //   console.error('Failed to add task:', error);
+    // }
+  };
 
   return (
     <div className="space-y-8">
@@ -149,11 +156,13 @@ export default function DashboardPage() {
             placeholder="Search tasks..."
             className="px-4 py-2 border rounded-lg w-80"
           />
-          <input type="date" className="px-4 py-2 border rounded-lg" />
         </div>
-        <button className="bg-primary text-primary-foreground px-4 py-2 rounded-lg">
-          + Add Task
-        </button>
+        <Button onClick={() => setIsDrawerOpen(true)}>+ Add Task</Button>
+        <AddTaskDrawer
+          isOpen={isDrawerOpen}
+          onClose={() => setIsDrawerOpen(false)}
+          onSubmit={addTask}
+        />
       </div>
 
       {/* Task Lists Section with Tabs */}

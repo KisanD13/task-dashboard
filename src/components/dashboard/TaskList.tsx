@@ -1,12 +1,7 @@
 import { Card } from "@/components/ui/card";
-import { CheckCircle2, Circle } from "lucide-react";
-
-interface Task {
-  id: string;
-  title: string;
-  status: "pending" | "completed" | "in_progress";
-  priority: "low" | "medium" | "high";
-}
+// import { CheckCircle2, Circle } from "lucide-react";
+import { Task } from "@/types/task";
+import { TaskItem } from "./TaskItem";
 
 interface TaskListProps {
   title: string;
@@ -26,6 +21,34 @@ export function TaskList({ title, tasks, variant }: TaskListProps) {
     }
   };
 
+  const handleStatusChange = async (
+    taskId: string,
+    status: "completed" | "cancelled" | "pending"
+  ) => {
+    try {
+      // API call would go here
+      console.log(`Updating task ${taskId} to status: ${status}`);
+      // await updateTaskStatus(taskId, status);
+    } catch (error) {
+      console.error("Failed to update task status:", error);
+    }
+  };
+
+  const handleDelete = async (taskId: string) => {
+    try {
+      // API call would go here
+      console.log(`Deleting task ${taskId}`);
+      // await deleteTask(taskId);
+    } catch (error) {
+      console.error("Failed to delete task:", error);
+    }
+  };
+
+  const handleEdit = (task: Task) => {
+    // Handle edit action - could open a modal or navigate to edit page
+    console.log("Editing task:", task);
+  };
+
   return (
     <Card className="p-6">
       <div className="flex items-center justify-between mb-4">
@@ -37,39 +60,13 @@ export function TaskList({ title, tasks, variant }: TaskListProps) {
 
       <div className="space-y-3">
         {tasks.map((task) => (
-          <div
+          <TaskItem
             key={task.id}
-            className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg group"
-          >
-            <button className="flex-shrink-0">
-              {task.status === "completed" ? (
-                <CheckCircle2 className="h-5 w-5 text-green-500" />
-              ) : (
-                <Circle className="h-5 w-5 text-gray-300 group-hover:text-gray-400" />
-              )}
-            </button>
-            <div className="flex-1">
-              <span
-                className={
-                  task.status === "completed"
-                    ? "line-through text-gray-500"
-                    : ""
-                }
-              >
-                {task.title}
-              </span>
-              {task.status === "in_progress" && (
-                <span className="ml-2 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
-                  In Progress
-                </span>
-              )}
-            </div>
-            {task.priority === "high" && (
-              <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded-full">
-                High
-              </span>
-            )}
-          </div>
+            task={task}
+            onStatusChange={handleStatusChange}
+            onDelete={handleDelete}
+            onEdit={handleEdit}
+          />
         ))}
 
         {tasks.length === 0 && (

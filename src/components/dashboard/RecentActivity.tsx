@@ -1,4 +1,5 @@
 import { CheckCircle2, Clock, Plus, RefreshCw } from "lucide-react";
+import { format } from "date-fns";
 
 interface Activity {
   id: string;
@@ -51,8 +52,7 @@ export function RecentActivity({ activities }: RecentActivityProps) {
                 {getActivityText(activity.type)}
               </p>
               <p className="text-xs text-gray-400">
-                {new Date(activity.timestamp).toLocaleTimeString()} -{" "}
-                {new Date(activity.timestamp).toLocaleDateString()}
+                {format(new Date(activity.timestamp), "HH:mm:ss")}
               </p>
             </div>
           </div>

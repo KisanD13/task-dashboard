@@ -1,7 +1,4 @@
-interface Task {
-  id: string;
-  status: "pending" | "completed" | "in_progress";
-}
+import { Task } from "@/types/task";
 
 interface TaskStatisticsProps {
   tasks: Task[];
@@ -10,8 +7,8 @@ interface TaskStatisticsProps {
 export function TaskStatistics({ tasks }: TaskStatisticsProps) {
   const total = tasks.length;
   const completed = tasks.filter((t) => t.status === "completed").length;
-  const inProgress = tasks.filter((t) => t.status === "in_progress").length;
   const pending = tasks.filter((t) => t.status === "pending").length;
+  const inProgress = tasks.filter((t) => t.status === "pending").length;
 
   const getPercentage = (count: number) => {
     return total === 0 ? 0 : Math.round((count / total) * 100);
