@@ -204,16 +204,6 @@ export default function DashboardPage() {
         </Card>
 
         <div className="space-y-6">
-          {/* <Card className="p-6">
-            <h2 className="font-semibold text-lg mb-4">Calendar</h2>
-            <Calendar
-              mode="single"
-              selected={date}
-              onSelect={setDate}
-              className="rounded-md border"
-            />
-          </Card> */}
-
           <Card className="p-6">
             <TaskStatistics tasks={mockTasks} />
           </Card>
