@@ -133,7 +133,7 @@ export default function DashboardPage() {
 
   const addTask = (newTask: Task) => {
     setTasks((prevTasks) => [...prevTasks, newTask]);
-    // When you have API:
+    ///api call to add task
     // try {
     //   const response = await fetch('/api/tasks', {
     //     method: 'POST',
