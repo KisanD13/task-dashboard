@@ -1,3 +1,5 @@
+"use client";
+
 import { Card } from "@/components/ui/card";
 // import { CheckCircle2, Circle } from "lucide-react";
 import { Task } from "@/types/task";
@@ -34,21 +36,6 @@ export function TaskList({ title, tasks, variant }: TaskListProps) {
     }
   };
 
-  const handleDelete = async (taskId: string) => {
-    try {
-      // API call would go here
-      console.log(`Deleting task ${taskId}`);
-      // await deleteTask(taskId);
-    } catch (error) {
-      console.error("Failed to delete task:", error);
-    }
-  };
-
-  const handleEdit = (task: Task) => {
-    // Handle edit action - could open a modal or navigate to edit page
-    console.log("Editing task:", task);
-  };
-
   return (
     <Card className="p-6">
       <div className="flex items-center justify-between mb-4">
@@ -64,8 +51,6 @@ export function TaskList({ title, tasks, variant }: TaskListProps) {
             key={task.id}
             task={task}
             onStatusChange={handleStatusChange}
-            onDelete={handleDelete}
-            onEdit={handleEdit}
           />
         ))}
 

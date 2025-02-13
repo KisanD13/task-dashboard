@@ -2,11 +2,10 @@ export interface Task {
   id: string;
   title: string;
   description?: string;
-  dueDate: string;
+  dueDate: Date;
   status: "completed" | "cancelled" | "pending";
   priority: "low" | "medium" | "high";
-  createdAt: string;
-  updatedAt: string;
-  userId: string;
+  createdAt: Date;
+  updatedAt: Date;
   categoryId?: string;
-} 
+}

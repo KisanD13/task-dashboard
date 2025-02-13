@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -7,68 +8,73 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
-  // SheetTrigger,
 } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useEffect, useState } from "react";
 import { Task } from "@/types/task";
 
-interface AddTaskDrawerProps {
+interface EditTaskDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (task: Task) => void;
+  taskId: string | null;
 }
 
-export function AddTaskDrawer({
+export function EditTaskDrawer({
   isOpen,
   onClose,
-  onSubmit,
-}: AddTaskDrawerProps) {
+  taskId,
+}: EditTaskDrawerProps) {
+  const [task, setTask] = useState<Task | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [dueDate, setDueDate] = useState<Date | null>(null);
+  const [dueDate, setDueDate] = useState<Date>(new Date());
   const [priority, setPriority] = useState<Task["priority"]>("medium");
 
+  console.log(task?.id);
+
   useEffect(() => {
-    setDueDate(new Date());
-  }, []);
+    if (taskId) {
+      const tasks: Task[] = JSON.parse(localStorage.getItem("tasks") || "[]");
+      const existingTask = tasks.find((t) => t.id === taskId);
+
+      if (existingTask) {
+        setTask(existingTask);
+        setTitle(existingTask.title);
+        setDescription(existingTask.description || "");
+        setDueDate(new Date(existingTask.dueDate));
+        setPriority(existingTask.priority);
+      }
+    }
+  }, [taskId]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!dueDate) return;
+    if (!task) return;
 
-    const newTask: Task = {
-      id: crypto.randomUUID(),
+    const updatedTask: Task = {
+      ...task,
       title,
       description,
-      dueDate: new Date(dueDate),
-      status: "pending",
+      dueDate,
       priority,
-      createdAt: new Date(),
       updatedAt: new Date(),
     };
 
-    onSubmit(newTask);
+    const tasks: Task[] = JSON.parse(localStorage.getItem("tasks") || "[]");
+    const updatedTasks = tasks.map((t) => (t.id === taskId ? updatedTask : t));
+    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+
     onClose();
-    // Reset form
-    setTitle("");
-    setDescription("");
-    setDueDate(new Date());
-    setPriority("medium");
   };
 
-  // Get today's date in YYYY-MM-DD format
-  const today = new Date().toISOString().split("T")[0];
+  if (!task) return null;
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent>
         <SheetHeader>
-          <SheetTitle>Add New Task</SheetTitle>
-          <SheetDescription>
-            Create a new task by filling out the form below.
-          </SheetDescription>
+          <SheetTitle>Edit Task</SheetTitle>
+          <SheetDescription>Modify the details of your task.</SheetDescription>
         </SheetHeader>
         <form onSubmit={handleSubmit} className="space-y-6 mt-6">
           <div className="space-y-2">
@@ -96,7 +102,6 @@ export function AddTaskDrawer({
               id="dueDate"
               type="date"
               value={dueDate ? dueDate.toISOString().split("T")[0] : ""}
-              min={today}
               onChange={(e) => setDueDate(new Date(e.target.value))}
               required
             />
@@ -117,7 +122,7 @@ export function AddTaskDrawer({
           </div>
 
           <Button type="submit" className="w-full">
-            Add Task
+            Save Changes
           </Button>
         </form>
       </SheetContent>

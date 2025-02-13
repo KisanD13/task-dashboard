@@ -1,3 +1,5 @@
+"use client";
+
 import { CheckCircle2, Clock, Plus, RefreshCw } from "lucide-react";
 import { format } from "date-fns";
 
