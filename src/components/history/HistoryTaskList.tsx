@@ -14,6 +14,14 @@ export default function HistoryTaskList({
   tasks: Task[];
   status: string;
 }) {
+  if (tasks.length === 0) {
+    return (
+      <Card className="p-6">
+        <p className="text-gray-500 text-center py-4">No tasks found</p>
+      </Card>
+    );
+  }
+
   return (
     <Card className="p-6">
       <div className="space-y-8">
