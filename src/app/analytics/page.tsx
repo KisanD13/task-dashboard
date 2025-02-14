@@ -78,9 +78,13 @@ export default function TaskAnalytics() {
               textAnchor="end"
               tick={{ fontSize: 12, fill: "#666" }}
               padding={{ left: 10, right: 10 }}
-              interval="preserveStartEnd"
+              dy={10} // Moves X-axis labels down slightly
             />
-            <YAxis />
+            <YAxis
+              domain={[0, "dataMax + 1"]} // Ensures line touches the bottom
+              tick={{ fontSize: 12, fill: "#666" }}
+              padding={{ bottom: 10 }} // Adds a slight gap between points and labels
+            />
             <Tooltip formatter={(value) => [`${value} Tasks`, ""]} />
             <Legend verticalAlign="top" />
             <Line
@@ -127,9 +131,13 @@ export default function TaskAnalytics() {
               textAnchor="end"
               tick={{ fontSize: 12, fill: "#666" }}
               padding={{ left: 10, right: 10 }}
-              interval="preserveStartEnd"
+              dy={10} // Moves X-axis labels down slightly
             />
-            <YAxis />
+            <YAxis
+              domain={[0, "dataMax + 1"]} // Ensures line touches the bottom
+              tick={{ fontSize: 12, fill: "#666" }}
+              padding={{ bottom: 10 }} // Adds a slight gap between points and labels
+            />
             <Tooltip formatter={(value) => [`${value} Tasks`, ""]} />
             <Legend verticalAlign="top" />
             <Line
