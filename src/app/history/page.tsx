@@ -138,6 +138,8 @@ export default function HistoryPage() {
                   <div className="absolute -left-[17px] p-1 bg-white">
                     {item.status === "completed" ? (
                       <CheckCircle2 className="h-5 w-5 text-green-500" />
+                    ) : item.status === "pending" ? (
+                      <Clock className="h-5 w-5 text-yellow-500" />
                     ) : (
                       <XCircle className="h-5 w-5 text-red-500" />
                     )}
@@ -157,6 +159,8 @@ export default function HistoryPage() {
                         className={`px-2 py-1 rounded-full text-xs ${
                           item.status === "completed"
                             ? "bg-green-100 text-green-700"
+                            : item.status === "pending"
+                            ? "bg-yellow-100 text-yellow-700"
                             : "bg-red-100 text-red-700"
                         }`}
                       >
