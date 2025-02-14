@@ -5,50 +5,20 @@ import { TaskList } from "@/components/dashboard/TaskList";
 import { TaskStatistics } from "@/components/dashboard/TaskStatistics";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Task } from "@/types/task";
 import { AddTaskDrawer } from "@/components/dashboard/AddTaskDrawer";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-
-const loadTasks = (): Task[] => {
-  if (typeof window !== "undefined") {
-    const savedTasks = localStorage.getItem("tasks");
-    return savedTasks ? JSON.parse(savedTasks) : [];
-  }
-  return [];
-};
-
-// const mockActivities: Activity[] = [
-//   {
-//     id: "1",
-//     type: "completed",
-//     taskId: "1",
-//     taskTitle: "Website Design Review",
-//     timestamp: "2024-03-14T16:23:00Z",
-//     userId: "user1",
-//   },
-//   // ... more mock activities
-// ];
+import { useTasks } from "@/context/TaskContext";
+import { RecentActivity } from "@/components/dashboard/RecentActivity";
 
 export default function DashboardPage() {
-  const [tasks, setTasks] = useState<Task[]>(loadTasks);
+  const { tasks, addTask } = useTasks();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
-  // Save tasks to localStorage when they change
-  useEffect(() => {
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-  }, [tasks]);
 
   const todayTasks = tasks.filter(
     (task) =>
       new Date(task.dueDate).toDateString() === new Date().toDateString()
   );
-
-  const addTask = (newTask: Task) => {
-    setTasks((prevTasks) => [...prevTasks, newTask]);
-    // Save the new task to localStorage
-    // localStorage.setItem("tasks", JSON.stringify([...tasks, newTask]));
-  };
 
   const tomorrowTasks = tasks.filter((task) => {
     const tomorrow = new Date();
@@ -62,7 +32,6 @@ export default function DashboardPage() {
     future.setHours(0, 0, 0, 0);
     return new Date(task.dueDate) >= future;
   });
-
 
   return (
     <div className="space-y-8">
@@ -126,9 +95,9 @@ export default function DashboardPage() {
 
       {/* Bottom Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* <Card className="p-6">
-          <RecentActivity activities={mockActivities} />
-        </Card> */}
+        <Card className="p-6">
+          <RecentActivity />
+        </Card>
 
         <div className="space-y-6">
           <Card className="p-6">
