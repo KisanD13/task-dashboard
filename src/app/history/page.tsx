@@ -1,5 +1,6 @@
 "use client";
 
+import HistoryTaskList from "@/components/history/HistoryTaskList";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTasks } from "@/context/TaskContext";
@@ -194,141 +195,24 @@ export default function HistoryPage() {
         </TabsContent>
 
         <TabsContent value="completed">
-          <Card className="p-6">
-            <div className="space-y-8">
-              {tasks
-                .filter((item) => item.status === "completed")
-                .map((item) => (
-                  <div
-                    key={item.id}
-                    className="relative pl-8 pb-8 border-l-2 border-gray-200 last:pb-0"
-                  >
-                    {/* Timeline Dot */}
-                    <div className="absolute -left-[17px] p-1 bg-white">
-                      <CheckCircle2 className="h-5 w-5 text-green-500" />
-                    </div>
-
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
-                        <Calendar className="h-4 w-4" />
-                        <span>
-                          {new Date(item.createdAt).toLocaleDateString()}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-medium">{item.title}</h3>
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs bg-green-100 text-green-700`}
-                        >
-                          Completed
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
-                        <ArrowRight className="h-4 w-4" />
-                        <span>
-                          Completed at{" "}
-                          {item.completedAt
-                            ? new Date(item?.completedAt).toLocaleString()
-                            : "Unknown"}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-            </div>
-          </Card>
+          <HistoryTaskList
+            tasks={tasks.filter((task) => task.status === "completed")}
+            status="completed"
+          />
         </TabsContent>
 
         <TabsContent value="cancelled">
-          <Card className="p-6">
-            <div className="space-y-8">
-              {tasks
-                .filter((item) => item.status === "cancelled")
-                .map((item) => (
-                  <div
-                    key={item.id}
-                    className="relative pl-8 pb-8 border-l-2 border-gray-200 last:pb-0"
-                  >
-                    {/* Timeline Dot */}
-                    <div className="absolute -left-[17px] p-1 bg-white">
-                      <XCircle className="h-5 w-5 text-red-500" />
-                    </div>
-
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
-                        <Calendar className="h-4 w-4" />
-                        <span>
-                          {new Date(item.createdAt).toLocaleDateString()}
-                        </span>
-                        <Clock className="h-4 w-4" />
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-medium">{item.title}</h3>
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs bg-red-100 text-red-700`}
-                        >
-                          Cancelled
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
-                        <ArrowRight className="h-4 w-4" />
-                        <span>
-                          Cancelled at{" "}
-                          {item.cancelledAt
-                            ? new Date(item?.cancelledAt).toLocaleString()
-                            : "Unknown"}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-            </div>
-          </Card>
+          <HistoryTaskList
+            tasks={tasks.filter((task) => task.status === "cancelled")}
+            status="cancelled"
+          />
         </TabsContent>
 
         <TabsContent value="pending">
-          <Card className="p-6">
-            <div className="space-y-8">
-              {tasks
-                .filter((item) => item.status === "pending")
-                .map((item) => (
-                  <div
-                    key={item.id}
-                    className="relative pl-8 pb-8 border-l-2 border-gray-200 last:pb-0"
-                  >
-                    {/* Timeline Dot */}
-                    <div className="absolute -left-[17px] p-1 bg-white">
-                      <Clock className="h-5 w-5 text-yellow-500" />
-                    </div>
-
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
-                        <Calendar className="h-4 w-4" />
-                        <span>
-                          {new Date(item.createdAt).toLocaleDateString()}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-medium">{item.title}</h3>
-                        <span className="px-2 py-1 rounded-full text-xs bg-yellow-100 text-yellow-700">
-                          Pending
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
-                        <ArrowRight className="h-4 w-4" />
-                        <span>Task is still pending</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-            </div>
-          </Card>
+          <HistoryTaskList
+            tasks={tasks.filter((task) => task.status === "pending")}
+            status="pending"
+          />
         </TabsContent>
       </Tabs>
     </div>
