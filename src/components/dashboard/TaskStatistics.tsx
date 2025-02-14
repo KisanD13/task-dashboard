@@ -10,7 +10,7 @@ export function TaskStatistics({ tasks }: TaskStatisticsProps) {
   const total = tasks.length;
   const completed = tasks.filter((t) => t.status === "completed").length;
   const pending = tasks.filter((t) => t.status === "pending").length;
-  const inProgress = tasks.filter((t) => t.status === "pending").length;
+  const cancelled = tasks.filter((t) => t.status === "cancelled").length;
 
   const getPercentage = (count: number) => {
     return total === 0 ? 0 : Math.round((count / total) * 100);
@@ -36,13 +36,13 @@ export function TaskStatistics({ tasks }: TaskStatisticsProps) {
 
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
-            <span>In Progress</span>
-            <span>{getPercentage(inProgress)}%</span>
+            <span>Cancelled</span>
+            <span>{getPercentage(cancelled)}%</span>
           </div>
           <div className="h-2 bg-gray-100 rounded-full">
             <div
               className="h-full bg-blue-500 rounded-full"
-              style={{ width: `${getPercentage(inProgress)}%` }}
+              style={{ width: `${getPercentage(cancelled)}%` }}
             />
           </div>
         </div>

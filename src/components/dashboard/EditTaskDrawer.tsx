@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Task } from "@/types/task";
+import { useTasks } from "@/context/TaskContext";
 
 interface EditTaskDrawerProps {
   isOpen: boolean;
@@ -24,17 +25,15 @@ export function EditTaskDrawer({
   onClose,
   taskId,
 }: EditTaskDrawerProps) {
+  const { tasks, updateTask } = useTasks();
   const [task, setTask] = useState<Task | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState<Date>(new Date());
   const [priority, setPriority] = useState<Task["priority"]>("medium");
 
-  console.log(task?.id);
-
   useEffect(() => {
     if (taskId) {
-      const tasks: Task[] = JSON.parse(localStorage.getItem("tasks") || "[]");
       const existingTask = tasks.find((t) => t.id === taskId);
 
       if (existingTask) {
@@ -45,7 +44,7 @@ export function EditTaskDrawer({
         setPriority(existingTask.priority);
       }
     }
-  }, [taskId]);
+  }, [taskId, tasks]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -60,10 +59,7 @@ export function EditTaskDrawer({
       updatedAt: new Date(),
     };
 
-    const tasks: Task[] = JSON.parse(localStorage.getItem("tasks") || "[]");
-    const updatedTasks = tasks.map((t) => (t.id === taskId ? updatedTask : t));
-    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
-
+    updateTask(updatedTask);
     onClose();
   };
 

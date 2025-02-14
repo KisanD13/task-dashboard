@@ -1,20 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Edit, Check, X, Trash2 } from "lucide-react"; // Assuming you're using lucide-react for icons
+import { Edit, Check, X, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Task } from "@/types/task";
 import { EditTaskDrawer } from "./EditTaskDrawer";
+import { useTasks } from "@/context/TaskContext";
 
-interface TaskItemProps {
-  task: Task;
-  onStatusChange: (
-    taskId: string,
-    status: "completed" | "cancelled" | "pending"
-  ) => void;
-}
-
-export function TaskItem({ task, onStatusChange }: TaskItemProps) {
+export function TaskItem({ task }: { task: Task }) {
+  const { completeTask, cancelledTask } = useTasks();
   const [isSelected, setIsSelected] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
@@ -49,53 +43,57 @@ export function TaskItem({ task, onStatusChange }: TaskItemProps) {
                   : ""
               } ${task.status === "cancelled" ? "border-red-600" : ""}`}
             />
-            <span className={getStatusStyles()}>{task.title}</span>
+            <span className={getStatusStyles()} title={task.description}>
+              {task.title}
+            </span>
           </div>
 
-          {isSelected && (
-            <div className="flex gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedTaskId(task.id);
-                  setIsDrawerOpen(true);
-                }}
-              >
-                <Edit className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onStatusChange(task.id, "completed");
-                }}
-              >
-                <Check className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onStatusChange(task.id, "cancelled");
-                }}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
-          )}
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedTaskId(task.id);
+                setIsDrawerOpen(true);
+              }}
+              title="Edit Task"
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                completeTask(task);
+              }}
+              title="Complete Task"
+            >
+              <Check className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                cancelledTask(task);
+              }}
+              title="Cancel Task"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+              title="Delete Task"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
 

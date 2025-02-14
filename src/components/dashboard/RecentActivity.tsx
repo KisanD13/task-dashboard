@@ -1,28 +1,25 @@
 "use client";
 
-import { CheckCircle2, Clock, Plus, RefreshCw } from "lucide-react";
+import { CheckCircle2, Clock, X } from "lucide-react";
 import { format } from "date-fns";
-
+import { useTasks } from "@/context/TaskContext";
 interface Activity {
   id: string;
-  type: "created" | "completed" | "updated" | "deleted";
+  type: "pending" | "completed" | "cancelled" | "deleted";
   taskTitle: string;
   timestamp: string;
 }
 
-interface RecentActivityProps {
-  activities: Activity[];
-}
-
-export function RecentActivity({ activities }: RecentActivityProps) {
+export function RecentActivity() {
+  const { tasks } = useTasks();
   const getActivityIcon = (type: Activity["type"]) => {
     switch (type) {
-      case "created":
-        return <Plus className="h-4 w-4 text-blue-500" />;
+      case "pending":
+        return <Clock className="h-4 w-4 text-gray-500" />;
       case "completed":
         return <CheckCircle2 className="h-4 w-4 text-green-500" />;
-      case "updated":
-        return <RefreshCw className="h-4 w-4 text-orange-500" />;
+      case "cancelled":
+        return <X className="h-4 w-4 text-red-500" />;
       default:
         return <Clock className="h-4 w-4 text-gray-500" />;
     }
@@ -30,12 +27,12 @@ export function RecentActivity({ activities }: RecentActivityProps) {
 
   const getActivityText = (type: Activity["type"]) => {
     switch (type) {
-      case "created":
+      case "pending":
         return "was created";
       case "completed":
         return "was completed";
-      case "updated":
-        return "was updated";
+      case "cancelled":
+        return "was cancelled";
       case "deleted":
         return "was deleted";
     }
@@ -45,22 +42,21 @@ export function RecentActivity({ activities }: RecentActivityProps) {
     <div className="space-y-4">
       <h2 className="font-semibold text-lg">Recent Activity</h2>
       <div className="space-y-4">
-        {activities.map((activity) => (
-          <div key={activity.id} className="flex items-start gap-3 text-sm">
-            <div className="mt-1">{getActivityIcon(activity.type)}</div>
+        {tasks.map((task) => (
+          <div key={task.id} className="flex items-start gap-3 text-sm">
+            <div className="mt-1">{getActivityIcon(task.status)}</div>
             <div className="flex-1">
               <p className="text-gray-600">
-                Task &quot;{activity.taskTitle}&quot;{" "}
-                {getActivityText(activity.type)}
+                Task &quot;{task.title}&quot; {getActivityText(task.status)}
               </p>
               <p className="text-xs text-gray-400">
-                {format(new Date(activity.timestamp), "HH:mm:ss")}
+                {format(new Date(task.createdAt), "HH:mm:ss")}
               </p>
             </div>
           </div>
         ))}
 
-        {activities.length === 0 && (
+        {tasks.length === 0 && (
           <p className="text-gray-500 text-center py-4">No recent activity</p>
         )}
       </div>

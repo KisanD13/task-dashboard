@@ -23,19 +23,6 @@ export function TaskList({ title, tasks, variant }: TaskListProps) {
     }
   };
 
-  const handleStatusChange = async (
-    taskId: string,
-    status: "completed" | "cancelled" | "pending"
-  ) => {
-    try {
-      // API call would go here
-      console.log(`Updating task ${taskId} to status: ${status}`);
-      // await updateTaskStatus(taskId, status);
-    } catch (error) {
-      console.error("Failed to update task status:", error);
-    }
-  };
-
   return (
     <Card className="p-6">
       <div className="flex items-center justify-between mb-4">
@@ -47,11 +34,7 @@ export function TaskList({ title, tasks, variant }: TaskListProps) {
 
       <div className="space-y-3">
         {tasks.map((task) => (
-          <TaskItem
-            key={task.id}
-            task={task}
-            onStatusChange={handleStatusChange}
-          />
+          <TaskItem key={task.id} task={task} />
         ))}
 
         {tasks.length === 0 && (
