@@ -37,25 +37,30 @@ export default function DashboardPage() {
     <div className="space-y-8">
       {/* Search and Add Task Header */}
       <div className="flex justify-between items-center">
-        <div className="flex gap-4 items-center">
+        <div className="flex flex-col md:flex-row gap-4 w-full">
           <input
             type="text"
             placeholder="Search tasks..."
-            className="px-4 py-2 border rounded-lg w-80"
+            className="px-4 py-2 border rounded-lg w-full md:w-80"
+          />
+          <Button
+            className="w-full md:w-auto"
+            onClick={() => setIsDrawerOpen(true)}
+          >
+            + Add Task
+          </Button>
+          <AddTaskDrawer
+            isOpen={isDrawerOpen}
+            onClose={() => setIsDrawerOpen(false)}
+            onSubmit={addTask}
           />
         </div>
-        <Button onClick={() => setIsDrawerOpen(true)}>+ Add Task</Button>
-        <AddTaskDrawer
-          isOpen={isDrawerOpen}
-          onClose={() => setIsDrawerOpen(false)}
-          onSubmit={addTask}
-        />
       </div>
 
       {/* Task Lists Section with Tabs */}
       <Card className="p-6">
         <Tabs defaultValue="today" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="hidden md:grid w-full grid-cols-3">
             <TabsTrigger value="today">
               Today&apos;s Tasks ({todayTasks.length})
             </TabsTrigger>
@@ -65,6 +70,12 @@ export default function DashboardPage() {
             <TabsTrigger value="future">
               Future Tasks ({futureTasks.length})
             </TabsTrigger>
+          </TabsList>
+
+          <TabsList className="md:hidden grid w-full grid-cols-3">
+            <TabsTrigger value="today">Today</TabsTrigger>
+            <TabsTrigger value="tomorrow">Tomorrow</TabsTrigger>
+            <TabsTrigger value="future">Future</TabsTrigger>
           </TabsList>
 
           <TabsContent value="today">

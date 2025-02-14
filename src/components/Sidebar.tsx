@@ -1,9 +1,14 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+// import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import {
   LayoutDashboard,
@@ -13,6 +18,7 @@ import {
   Settings,
   Menu,
 } from "lucide-react";
+import { useState } from "react";
 
 const routes = [
   {
@@ -49,6 +55,12 @@ const routes = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
+  const handleNavigation = (href: string) => {
+    setIsOpen(false);
+    router.push(href);
+  };
 
   const SidebarContent = (
     <div className="space-y-4 py-4 flex flex-col h-full">
@@ -58,15 +70,15 @@ export function Sidebar() {
             <div className="rounded-full bg-gray-200 w-full h-full" />
           </div>
           <div>
-            <p className="font-semibold">John Doe</p>
+            <p className="font-semibold">King Kishan</p>
             <p className="text-xs text-muted-foreground">Premium User</p>
           </div>
         </div>
         <div className="space-y-1">
           {routes.map((route) => (
-            <Link
+            <button
               key={route.href}
-              href={route.href}
+              onClick={() => handleNavigation(route.href)}
               className={cn(
                 "text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-primary hover:bg-primary/10 rounded-lg transition",
                 pathname === route.href
@@ -78,7 +90,7 @@ export function Sidebar() {
                 <route.icon className={cn("h-5 w-5 mr-3", route.color)} />
                 {route.label}
               </div>
-            </Link>
+            </button>
           ))}
         </div>
       </div>
@@ -89,9 +101,11 @@ export function Sidebar() {
   return (
     <>
       {/* Mobile Sidebar */}
-      <Sheet>
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger>
-          <Menu className="h-6 w-6 md:hidden" />
+          <SheetTitle>
+            <Menu className="h-8 w-8 md:hidden ml-2" />
+          </SheetTitle>
         </SheetTrigger>
         <SheetContent side="left" className="p-0 w-72">
           {SidebarContent}

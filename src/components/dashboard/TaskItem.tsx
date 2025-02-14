@@ -25,27 +25,31 @@ export function TaskItem({ task }: { task: Task }) {
 
   return (
     <>
-      <div
-        className={`p-3 rounded-lg transition-colors cursor-pointer hover:bg-accent/50`}
-      >
-        <div className={`flex items-center justify-between`}>
-          <div className="flex items-center gap-3">
+      <div className="p-3 rounded-lg transition-colors cursor-pointer hover:bg-accent/50">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-start md:justify-between w-full gap-2">
+          {/* Left Section: Title & Status */}
+          <div className="flex items-center gap-3 w-full md:w-auto">
             <div
-              className={`w-4 h-4 rounded-full border-2 border-gray-400
-               ${
-                 task.status === "completed"
-                   ? "border-green-600 bg-green-600"
-                   : ""
-               } ${task.status === "cancelled" ? "border-red-600" : ""}`}
+              className={`w-4 h-4 rounded-full border-2 border-gray-400 ${
+                task.status === "completed"
+                  ? "border-green-600 bg-green-600"
+                  : task.status === "cancelled"
+                  ? "border-red-600"
+                  : ""
+              }`}
             />
             <span className={getStatusStyles()} title={task.description}>
               {task.title}
             </span>
           </div>
 
-          <div className="text-sm text-gray-500">{task.description}</div>
+          {/* Center Section: Description */}
+          <div className="text-sm text-gray-500 w-full md:w-auto">
+            {task.description}
+          </div>
 
-          <div className="flex gap-2">
+          {/* Right Section: Action Buttons */}
+          <div className="flex gap-2 w-full md:w-auto">
             <Button
               variant="ghost"
               size="sm"
