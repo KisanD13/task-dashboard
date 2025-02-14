@@ -17,6 +17,10 @@ interface TasksContextType {
   cancelledTask: (cancelledTask: Task) => void;
   deleteTask: (deleteTask: Task) => void;
   pendingTask: (pendingTask: Task) => void;
+  updateTaskStatus: (
+    taskId: string,
+    newStatus: "completed" | "cancelled"
+  ) => void;
 }
 
 const TasksContext = createContext<TasksContextType | undefined>(undefined);
@@ -73,6 +77,25 @@ export function TasksProvider({ children }: { children: ReactNode }) {
     setTasks((prevTasks) => prevTasks.filter((t) => t.id !== task.id));
   };
 
+  const updateTaskStatus = (
+    taskId: string,
+    newStatus: "completed" | "cancelled"
+  ) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === taskId
+          ? {
+              ...task,
+              status: newStatus,
+              updatedAt: new Date(),
+              completedAt: newStatus === "completed" ? new Date() : undefined,
+              cancelledAt: newStatus === "cancelled" ? new Date() : undefined,
+            }
+          : task
+      )
+    );
+  };
+
   return (
     <TasksContext.Provider
       value={{
@@ -83,6 +106,7 @@ export function TasksProvider({ children }: { children: ReactNode }) {
         cancelledTask,
         deleteTask,
         pendingTask,
+        updateTaskStatus,
       }}
     >
       {children}

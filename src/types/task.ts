@@ -8,4 +8,6 @@ export interface Task {
   createdAt: Date;
   updatedAt: Date;
   categoryId?: string;
+  completedAt?: Date;
+  cancelledAt?: Date;
 }

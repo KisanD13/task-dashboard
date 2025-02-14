@@ -9,7 +9,13 @@ import { useTasks } from "@/context/TaskContext";
 import { Badge } from "../ui/badge";
 
 export function TaskItem({ task }: { task: Task }) {
-  const { completeTask, cancelledTask, deleteTask, pendingTask } = useTasks();
+  const {
+    completeTask,
+    cancelledTask,
+    deleteTask,
+    pendingTask,
+    updateTaskStatus,
+  } = useTasks();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
@@ -75,6 +81,7 @@ export function TaskItem({ task }: { task: Task }) {
               onClick={(e) => {
                 e.stopPropagation();
                 completeTask(task);
+                updateTaskStatus(task.id, "completed");
               }}
               title="Complete Task"
             >
@@ -88,6 +95,7 @@ export function TaskItem({ task }: { task: Task }) {
               onClick={(e) => {
                 e.stopPropagation();
                 cancelledTask(task);
+                updateTaskStatus(task.id, "cancelled");
               }}
               title="Cancel Task"
             >
