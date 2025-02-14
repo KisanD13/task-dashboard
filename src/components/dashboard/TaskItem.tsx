@@ -8,7 +8,7 @@ import { EditTaskDrawer } from "./EditTaskDrawer";
 import { useTasks } from "@/context/TaskContext";
 
 export function TaskItem({ task }: { task: Task }) {
-  const { completeTask, cancelledTask } = useTasks();
+  const { completeTask, cancelledTask, deleteTask } = useTasks();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
@@ -89,6 +89,7 @@ export function TaskItem({ task }: { task: Task }) {
               size="sm"
               onClick={(e) => {
                 e.stopPropagation();
+                deleteTask(task);
               }}
               title="Delete Task"
             >
