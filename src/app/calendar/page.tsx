@@ -7,35 +7,48 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ChevronLeft,
   ChevronRight,
-  Clock,
-  Calendar as CalendarIcon,
   CheckCircle2,
-  Circle,
+  Check,
+  X,
+  XCircle,
+  Clock,
+  Edit,
+  Trash2,
 } from "lucide-react";
 import { useTasks } from "@/context/TaskContext";
+import { EditTaskDrawer } from "@/components/dashboard/EditTaskDrawer";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { formatDueDate, isTaskForToday } from "@/utils/utils";
 
 export default function CalendarPage() {
-  const { tasks, updateTaskStatus } = useTasks();
-  const [date, setDate] = useState<Date>(new Date());
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const {
+    tasks,
+    updateTaskStatus,
+    completeTask,
+    cancelledTask,
+    deleteTask,
+    pendingTask,
+  } = useTasks();
+  const [date, setDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
-  // 🔹 Filter tasks based on selected date
+  // 📌 Filter tasks for the selected date
   const filteredTasks = tasks.filter(
     (task) =>
       new Date(task.dueDate).toDateString() === selectedDate.toDateString()
   );
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
+    <div className="space-y-8 p-6">
+      {/* 🔹 Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Calendar</h1>
-        <button className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-lg">
-          + Add Task
-        </button>
       </div>
 
-      <Tabs defaultValue="calendar" className="space-y-6">
+      <Tabs defaultValue="calendar">
         <TabsList>
           <TabsTrigger value="calendar">Calendar View</TabsTrigger>
           <TabsTrigger value="tasks">All Tasks</TabsTrigger>
@@ -44,9 +57,10 @@ export default function CalendarPage() {
         {/* 📅 Calendar View */}
         <TabsContent value="calendar">
           <div className="flex flex-col md:flex-row gap-6">
-            {/* 📅 Calendar Section */}
+            {/* 🗓️ Calendar Section */}
             <Card className="w-full md:w-2/3 p-6">
               <div className="space-y-4">
+                {/* 🔄 Month Navigation */}
                 <div className="flex items-center justify-between">
                   <h2 className="font-semibold">
                     {date.toLocaleString("default", {
@@ -79,72 +93,147 @@ export default function CalendarPage() {
                   <Calendar
                     mode="single"
                     selected={selectedDate}
-                    onSelect={(day) => {
-                      if (day) {
-                        setSelectedDate(day);
-                      }
-                    }}
+                    onSelect={(day) => day && setSelectedDate(day)}
                     className="rounded-md border"
                   />
                 </div>
               </div>
             </Card>
 
-            {/* 📋 Selected Date Tasks */}
+            {/* 📋 Task List for Selected Date */}
             <Card className="w-full md:w-1/3 p-6">
-              <div className="space-y-6">
-                <h2 className="font-semibold text-center">
-                  Tasks for {selectedDate.toLocaleDateString()}
-                </h2>
+              <h2 className="font-semibold text-center">
+                Tasks for {selectedDate.toLocaleDateString()}
+              </h2>
 
-                <div className="space-y-4">
-                  {filteredTasks.length > 0 ? (
-                    filteredTasks.map((task) => (
-                      <div
-                        key={task.id}
-                        className="flex items-start space-x-4 p-3 hover:bg-gray-50 rounded-lg transition"
-                      >
-                        <button
-                          onClick={() =>
-                            updateTaskStatus(
-                              task.id,
-                              task.status === "completed"
-                                ? "cancelled"
-                                : "completed"
-                            )
-                          }
-                          className="flex-shrink-0"
-                        >
-                          {task.status === "completed" ? (
-                            <CheckCircle2 className="h-5 w-5 text-green-500" />
-                          ) : (
-                            <Circle className="h-5 w-5 text-gray-300" />
-                          )}
-                        </button>
-                        <div className="flex-1 space-y-1">
-                          <p
-                            className={`font-medium ${
-                              task.status === "completed"
-                                ? "line-through text-gray-500"
-                                : ""
-                            }`}
-                          >
-                            {task.title}
-                          </p>
-                          <div className="flex items-center text-sm text-gray-500">
-                            <p>{new Date(task.dueDate).toLocaleDateString()}</p>
-                            <span className="mx-2">•</span>
-                            <p>{task.priority.toUpperCase()}</p>
+              <div className="space-y-4 mt-4">
+                {filteredTasks.length > 0 ? (
+                  filteredTasks.map((task) => {
+                    return (
+                      <div key={task.id}>
+                        <div className="p-3 rounded-lg transition-colors cursor-pointer hover:bg-accent/50">
+                          <div className="flex flex-col md:flex-row items-start md:items-center justify-start md:justify-between w-full gap-2">
+                            {/* Left Section: Title & Status */}
+                            <div className="flex items-center gap-3 w-full md:w-auto">
+                              {task.status === "completed" ? (
+                                <CheckCircle2 className="h-5 w-5 text-green-500" />
+                              ) : task.status === "cancelled" ? (
+                                <XCircle className="h-5 w-5 text-red-500" />
+                              ) : (
+                                <Clock className="h-5 w-5 text-yellow-500" />
+                              )}
+
+                              <span title={task.description}>{task.title}</span>
+                            </div>
+
+                            {task.status === "pending" && (
+                              <Badge
+                                variant="outline"
+                                className="text-yellow-600"
+                              >
+                                {task.status.toUpperCase()}
+                              </Badge>
+                            )}
+
+                            {/* Center Section: Description */}
+                            <div className="text-sm text-gray-500 w-full md:w-auto">
+                              {task.description}
+                            </div>
+
+                            {/* Right Section: Action Buttons */}
+                            <div className="flex gap-2 w-full md:w-auto">
+                              <Button
+                                variant="ghost"
+                                className="bg-blue-200 hover:bg-blue-300 active:bg-blue-300"
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedTaskId(task.id);
+                                  setIsDrawerOpen(true);
+                                }}
+                                title="Edit Task"
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              {task.status !== "completed" &&
+                                isTaskForToday(task) && (
+                                  <Button
+                                    variant="ghost"
+                                    className="bg-green-200 hover:bg-green-300 active:bg-green-300"
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      completeTask(task);
+                                      updateTaskStatus(task.id, "completed");
+                                    }}
+                                    title="Complete Task"
+                                  >
+                                    <Check className="h-4 w-4" />
+                                  </Button>
+                                )}
+
+                              {task.status !== "cancelled" && (
+                                <Button
+                                  variant="default"
+                                  className="bg-red-200 hover:bg-red-300 active:bg-red-300"
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    cancelledTask(task);
+                                    updateTaskStatus(task.id, "cancelled");
+                                  }}
+                                  title="Cancel Task"
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              )}
+
+                              {task.status !== "pending" && (
+                                <Button
+                                  variant="ghost"
+                                  className="bg-yellow-200 hover:bg-yellow-300 active:bg-yellow-300"
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    pendingTask(task);
+                                  }}
+                                  title="Pending Task"
+                                >
+                                  <Clock className="h-4 w-4" />
+                                </Button>
+                              )}
+
+                              <Button
+                                variant="default"
+                                size="sm"
+                                className="bg-red-400 hover:bg-red-500 active:bg-red-500"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  deleteTask(task);
+                                }}
+                                title="Delete Task"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </div>
                         </div>
+
+                        <EditTaskDrawer
+                          isOpen={isDrawerOpen}
+                          onClose={() => {
+                            setIsDrawerOpen(false);
+                          }}
+                          taskId={selectedTaskId}
+                        />
                       </div>
-                    ))
-                  ) : (
-                    <p className="text-gray-500 text-center py-4">
-                      No tasks scheduled for this day
-                    </p>
-                  )}
-                </div>
+                    );
+                  })
+                ) : (
+                  <p className="text-gray-500 text-center py-4">
+                    No tasks scheduled for this day
+                  </p>
+                )}
               </div>
             </Card>
           </div>
@@ -153,62 +242,172 @@ export default function CalendarPage() {
         {/* 📋 All Tasks Tab */}
         <TabsContent value="tasks">
           <Card className="p-6">
-            <div className="space-y-6">
-              <div className="flex justify-between items-center">
-                <h2 className="font-semibold">All Tasks</h2>
-                <div className="flex gap-2">
-                  <button className="text-sm text-gray-500 hover:text-gray-700">
-                    Sort by Date
-                  </button>
-                  <button className="text-sm text-gray-500 hover:text-gray-700">
-                    Filter
-                  </button>
-                </div>
-              </div>
+            <h2 className="font-semibold mb-4">All Tasks</h2>
+            <div className="space-y-4">
+              <div className="space-y-4 mt-4">
+                {tasks.length > 0 ? (
+                  tasks.map((task) => {
+                    const isTaskForToday = () => {
+                      const taskDate = new Date(task.dueDate);
+                      const today = new Date();
+                      today.setHours(0, 0, 0, 0); // Reset time for accurate comparison
 
-              <div className="space-y-4">
-                {tasks.map((task) => (
-                  <div
-                    key={task.id}
-                    className="flex items-center gap-4 p-4 hover:bg-gray-50 rounded-lg transition"
-                  >
-                    <button
-                      onClick={() =>
-                        updateTaskStatus(
-                          task.id,
-                          task.status === "completed"
-                            ? "cancelled"
-                            : "completed"
-                        )
-                      }
-                      className="flex-shrink-0"
-                    >
-                      {task.status === "completed" ? (
-                        <CheckCircle2 className="h-5 w-5 text-green-500" />
-                      ) : (
-                        <Circle className="h-5 w-5 text-gray-300" />
-                      )}
-                    </button>
-                    <div className="flex-1">
-                      <p
-                        className={`font-medium ${
-                          task.status === "completed"
-                            ? "line-through text-gray-500"
-                            : ""
-                        }`}
-                      >
-                        {task.title}
-                      </p>
-                      <div className="flex items-center text-sm text-gray-500">
-                        <CalendarIcon className="h-4 w-4 mr-2" />
-                        <p>{new Date(task.dueDate).toLocaleDateString()}</p>
-                        <span className="mx-2">•</span>
-                        <Clock className="h-4 w-4 mr-2" />
-                        <p>{task.priority.toUpperCase()}</p>
+                      return taskDate.toDateString() === today.toDateString();
+                    };
+                    return (
+                      <div key={task.id}>
+                        <div className="p-3 rounded-lg transition-colors cursor-pointer hover:bg-accent/50">
+                          <div className="flex flex-col md:flex-row items-start md:items-center justify-start md:justify-between w-full gap-2">
+                            {/* Left Section: Title & Status */}
+                            <div className="flex items-center gap-3 w-full md:w-auto">
+                              {task.status === "completed" ? (
+                                <CheckCircle2 className="h-5 w-5 text-green-500" />
+                              ) : task.status === "cancelled" ? (
+                                <XCircle className="h-5 w-5 text-red-500" />
+                              ) : (
+                                <Clock className="h-5 w-5 text-yellow-500" />
+                              )}
+
+                              <span title={task.description}>{task.title}</span>
+                            </div>
+
+                            {task.status === "pending" && (
+                              <Badge
+                                variant="outline"
+                                className="text-yellow-600"
+                              >
+                                {task.status.toUpperCase()}
+                              </Badge>
+                            )}
+
+                            {/* Center Section: Description */}
+                            <div className="text-sm text-gray-500 w-full md:w-auto">
+                              {task.description}
+                            </div>
+
+                            {/* Right Section: Action Buttons */}
+                            <div className="flex gap-2 w-full md:w-auto">
+                              <Button
+                                variant="ghost"
+                                className="bg-blue-200 hover:bg-blue-300 active:bg-blue-300"
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedTaskId(task.id);
+                                  setIsDrawerOpen(true);
+                                }}
+                                title="Edit Task"
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              {task.status !== "completed" &&
+                                isTaskForToday() && (
+                                  <Button
+                                    variant="ghost"
+                                    className="bg-green-200 hover:bg-green-300 active:bg-green-300"
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      completeTask(task);
+                                      updateTaskStatus(task.id, "completed");
+                                    }}
+                                    title="Complete Task"
+                                  >
+                                    <Check className="h-4 w-4" />
+                                  </Button>
+                                )}
+
+                              {task.status !== "cancelled" && (
+                                <Button
+                                  variant="default"
+                                  className="bg-red-200 hover:bg-red-300 active:bg-red-300"
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    cancelledTask(task);
+                                    updateTaskStatus(task.id, "cancelled");
+                                  }}
+                                  title="Cancel Task"
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              )}
+
+                              {task.status !== "pending" && (
+                                <Button
+                                  variant="ghost"
+                                  className="bg-yellow-200 hover:bg-yellow-300 active:bg-yellow-300"
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    pendingTask(task);
+                                  }}
+                                  title="Pending Task"
+                                >
+                                  <Clock className="h-4 w-4" />
+                                </Button>
+                              )}
+
+                              <Button
+                                variant="default"
+                                size="sm"
+                                className="bg-red-400 hover:bg-red-500 active:bg-red-500"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  deleteTask(task);
+                                }}
+                                title="Delete Task"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                            <Badge
+                              variant="outline"
+                              className={`${
+                                task.status === "completed"
+                                  ? "text-green-600"
+                                  : task.status === "cancelled"
+                                  ? "text-red-600"
+                                  : "text-yellow-600"
+                              }`}
+                            >
+                              Task{" "}
+                              {task.status === "completed"
+                                ? `is completed on ${
+                                    task.completedAt &&
+                                    formatDueDate(
+                                      task?.completedAt.toDateString()
+                                    )
+                                  }`
+                                : task.status === "cancelled"
+                                ? `is cancelled on ${
+                                    task.cancelledAt &&
+                                    formatDueDate(
+                                      task?.cancelledAt.toDateString()
+                                    )
+                                  }`
+                                : `is scheduled for ${formatDueDate(
+                                    task.dueDate.toDateString()
+                                  )}`}{" "}
+                            </Badge>
+                          </div>
+                        </div>
+
+                        <EditTaskDrawer
+                          isOpen={isDrawerOpen}
+                          onClose={() => {
+                            setIsDrawerOpen(false);
+                          }}
+                          taskId={selectedTaskId}
+                        />
                       </div>
-                    </div>
-                  </div>
-                ))}
+                    );
+                  })
+                ) : (
+                  <p className="text-gray-500 text-center py-4">
+                    No tasks scheduled for this day
+                  </p>
+                )}
               </div>
             </div>
           </Card>

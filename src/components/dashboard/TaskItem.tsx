@@ -15,6 +15,7 @@ import { Task } from "@/types/task";
 import { EditTaskDrawer } from "./EditTaskDrawer";
 import { useTasks } from "@/context/TaskContext";
 import { Badge } from "../ui/badge";
+import { formatDueDate, isTaskForToday } from "@/utils/utils";
 
 export function TaskItem({
   task,
@@ -54,39 +55,9 @@ export function TaskItem({
     }
   };
 
-  const formatDueDate = (dueDate: string) => {
-    const taskDate = new Date(dueDate);
-    const today = new Date();
-    const tomorrow = new Date();
-
-    today.setHours(0, 0, 0, 0);
-    tomorrow.setDate(today.getDate() + 1);
-    tomorrow.setHours(0, 0, 0, 0);
-
-    if (taskDate.toDateString() === today.toDateString()) {
-      return "Today";
-    } else if (taskDate.toDateString() === tomorrow.toDateString()) {
-      return "Tomorrow";
-    } else {
-      return taskDate.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      });
-    }
-  };
-
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   tomorrow.setHours(0, 0, 0, 0);
-
-  const isTaskForToday = () => {
-    const taskDate = new Date(task.dueDate);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Reset time for accurate comparison
-
-    return taskDate.toDateString() === today.toDateString();
-  };
 
   return (
     <>
@@ -133,7 +104,7 @@ export function TaskItem({
             >
               <Edit className="h-4 w-4" />
             </Button>
-            {task.status !== "completed" && isTaskForToday() && (
+            {task.status !== "completed" && isTaskForToday(task) && (
               <Button
                 variant="ghost"
                 className="bg-green-200 hover:bg-green-300 active:bg-green-300"
