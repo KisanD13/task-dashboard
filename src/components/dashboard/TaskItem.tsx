@@ -80,7 +80,13 @@ export function TaskItem({
   tomorrow.setDate(tomorrow.getDate() + 1);
   tomorrow.setHours(0, 0, 0, 0);
 
-  const dueDateString = task.dueDate.toDateString() >= tomorrow.toDateString();
+  const isTaskForToday = () => {
+    const taskDate = new Date(task.dueDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time for accurate comparison
+
+    return taskDate.toDateString() === today.toDateString();
+  };
 
   return (
     <>
@@ -127,7 +133,7 @@ export function TaskItem({
             >
               <Edit className="h-4 w-4" />
             </Button>
-            {task.status !== "completed" && !dueDateString && (
+            {task.status !== "completed" && isTaskForToday() && (
               <Button
                 variant="ghost"
                 className="bg-green-200 hover:bg-green-300 active:bg-green-300"

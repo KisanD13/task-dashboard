@@ -82,7 +82,7 @@ export default function DashboardPage() {
                   <Search className="h-4 w-10" />
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="max-h-[70vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Your Search Results</DialogTitle>
                   <DialogDescription></DialogDescription>
