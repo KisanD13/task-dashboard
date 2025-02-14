@@ -16,7 +16,21 @@ import { EditTaskDrawer } from "./EditTaskDrawer";
 import { useTasks } from "@/context/TaskContext";
 import { Badge } from "../ui/badge";
 
-export function TaskItem({ task, dueDate }: { task: Task; dueDate?: Date }) {
+export function TaskItem({
+  task,
+  onClose,
+  variant,
+}: {
+  task: Task;
+  onClose?: () => void;
+  variant?:
+    | "today"
+    | "tomorrow"
+    | "future"
+    | "completed"
+    | "cancelled"
+    | "search";
+}) {
   const {
     completeTask,
     cancelledTask,
@@ -39,6 +53,34 @@ export function TaskItem({ task, dueDate }: { task: Task; dueDate?: Date }) {
         return "text-gray-600";
     }
   };
+
+  const formatDueDate = (dueDate: string) => {
+    const taskDate = new Date(dueDate);
+    const today = new Date();
+    const tomorrow = new Date();
+
+    today.setHours(0, 0, 0, 0);
+    tomorrow.setDate(today.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+
+    if (taskDate.toDateString() === today.toDateString()) {
+      return "Today";
+    } else if (taskDate.toDateString() === tomorrow.toDateString()) {
+      return "Tomorrow";
+    } else {
+      return taskDate.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+    }
+  };
+
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(0, 0, 0, 0);
+
+  const dueDateString = task.dueDate.toDateString() >= tomorrow.toDateString();
 
   return (
     <>
@@ -85,7 +127,7 @@ export function TaskItem({ task, dueDate }: { task: Task; dueDate?: Date }) {
             >
               <Edit className="h-4 w-4" />
             </Button>
-            {task.status !== "completed" && !dueDate && (
+            {task.status !== "completed" && !dueDateString && (
               <Button
                 variant="ghost"
                 className="bg-green-200 hover:bg-green-300 active:bg-green-300"
@@ -94,6 +136,7 @@ export function TaskItem({ task, dueDate }: { task: Task; dueDate?: Date }) {
                   e.stopPropagation();
                   completeTask(task);
                   updateTaskStatus(task.id, "completed");
+                  onClose?.();
                 }}
                 title="Complete Task"
               >
@@ -110,6 +153,7 @@ export function TaskItem({ task, dueDate }: { task: Task; dueDate?: Date }) {
                   e.stopPropagation();
                   cancelledTask(task);
                   updateTaskStatus(task.id, "cancelled");
+                  onClose?.();
                 }}
                 title="Cancel Task"
               >
@@ -125,6 +169,8 @@ export function TaskItem({ task, dueDate }: { task: Task; dueDate?: Date }) {
                 onClick={(e) => {
                   e.stopPropagation();
                   pendingTask(task);
+
+                  onClose?.();
                 }}
                 title="Pending Task"
               >
@@ -139,18 +185,50 @@ export function TaskItem({ task, dueDate }: { task: Task; dueDate?: Date }) {
               onClick={(e) => {
                 e.stopPropagation();
                 deleteTask(task);
+                onClose?.();
               }}
               title="Delete Task"
             >
               <Trash2 className="h-4 w-4" />
             </Button>
           </div>
+
+          {variant === "search" && (
+            <Badge
+              variant="outline"
+              className={`${
+                task.status === "completed"
+                  ? "text-green-600"
+                  : task.status === "cancelled"
+                  ? "text-red-600"
+                  : "text-yellow-600"
+              }`}
+            >
+              Task{" "}
+              {task.status === "completed"
+                ? `is completed on ${
+                    task.completedAt &&
+                    formatDueDate(task?.completedAt.toDateString())
+                  }`
+                : task.status === "cancelled"
+                ? `is cancelled on ${
+                    task.cancelledAt &&
+                    formatDueDate(task?.cancelledAt.toDateString())
+                  }`
+                : `is scheduled for ${formatDueDate(
+                    task.dueDate.toDateString()
+                  )}`}{" "}
+            </Badge>
+          )}
         </div>
       </div>
 
       <EditTaskDrawer
         isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
+        onClose={() => {
+          setIsDrawerOpen(false);
+          onClose?.();
+        }}
         taskId={selectedTaskId}
       />
     </>

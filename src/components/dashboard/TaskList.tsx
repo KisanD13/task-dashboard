@@ -8,11 +8,17 @@ import { TaskItem } from "./TaskItem";
 interface TaskListProps {
   title: string;
   tasks: Task[];
-  variant: "today" | "tomorrow" | "future" | "completed" | "cancelled";
-  dueDate?: Date;
+  variant:
+    | "today"
+    | "tomorrow"
+    | "future"
+    | "completed"
+    | "cancelled"
+    | "search";
+  onClose?: () => void;
 }
 
-export function TaskList({ title, tasks, variant, dueDate }: TaskListProps) {
+export function TaskList({ title, tasks, variant, onClose }: TaskListProps) {
   const getBadgeColor = () => {
     switch (variant) {
       case "today":
@@ -35,7 +41,7 @@ export function TaskList({ title, tasks, variant, dueDate }: TaskListProps) {
 
       <div className="space-y-3">
         {tasks.map((task) => (
-          <TaskItem key={task.id} task={task} dueDate={dueDate} />
+          <TaskItem key={task.id} task={task} onClose={onClose} variant={variant} />
         ))}
 
         {tasks.length === 0 && (

@@ -10,10 +10,21 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useTasks } from "@/context/TaskContext";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
+import { Search } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export default function DashboardPage() {
   const { tasks, addTask } = useTasks();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchDialogOpen, setIsSearchDialogOpen] = useState(false);
 
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
@@ -37,16 +48,58 @@ export default function DashboardPage() {
     return new Date(task.dueDate) >= future;
   });
 
+  const filteredTasks = tasks.filter((task) => {
+    return task.title.toLowerCase().includes(searchQuery.toLowerCase());
+  });
+
   return (
     <div className="space-y-8">
       {/* Search and Add Task Header */}
       <div className="flex justify-between items-center">
         <div className="flex flex-col md:flex-row gap-4 w-full">
-          <input
-            type="text"
-            placeholder="Search tasks..."
-            className="px-4 py-2 border rounded-lg w-full md:w-80"
-          />
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              placeholder="Search tasks..."
+              className="px-4 py-2 border rounded-lg w-full md:w-80"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              required
+            />
+            <Dialog
+              open={isSearchDialogOpen}
+              onOpenChange={(open) => {
+                setIsSearchDialogOpen(open);
+                if (!open) setSearchQuery("");
+              }}
+            >
+              <DialogTrigger asChild>
+                <Button
+                  className="p-2 px-4 rounded"
+                  size="lg"
+                  onClick={() => setIsSearchDialogOpen(true)}
+                >
+                  <Search className="h-4 w-10" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Your Search Results</DialogTitle>
+                  <DialogDescription></DialogDescription>
+                </DialogHeader>
+
+                <TaskList
+                  title="Search Results"
+                  tasks={filteredTasks}
+                  variant="search"
+                  onClose={() => {
+                    setIsSearchDialogOpen(false);
+                    setSearchQuery("");
+                  }}
+                />
+              </DialogContent>
+            </Dialog>
+          </div>
           <Button
             className="w-full md:w-auto"
             onClick={() => setIsDrawerOpen(true)}
@@ -103,7 +156,6 @@ export default function DashboardPage() {
               title="Tomorrow"
               tasks={tomorrowTasks.filter((task) => task.status === "pending")}
               variant="tomorrow"
-              dueDate={tomorrow}
             />
           </TabsContent>
 
@@ -112,7 +164,6 @@ export default function DashboardPage() {
               title="Future Tasks"
               tasks={futureTasks.filter((task) => task.status === "pending")}
               variant="future"
-              dueDate={future}
             />
           </TabsContent>
         </Tabs>
