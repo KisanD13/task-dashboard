@@ -63,8 +63,10 @@ export function Sidebar() {
             <div className="rounded-full bg-gray-200 w-full h-full" />
           </div>
           <div>
-            <p className="font-semibold">King Kishan</p>
-            <p className="text-xs text-muted-foreground">Premium User</p>
+            {/* <p className="font-semibold">King Kishan</p> */}
+            <p className="text-xs font-semibold text-muted-foreground">
+              Premium User
+            </p>
           </div>
         </div>
         <div className="space-y-1">

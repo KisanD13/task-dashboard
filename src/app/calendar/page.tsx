@@ -389,7 +389,9 @@ export default function CalendarPage() {
                                 ? `is completed on ${
                                     task.completedAt &&
                                     formatDueDate(
-                                      task?.completedAt.toDateString()
+                                      task?.completedAt
+                                        .toDateString()
+                                        .split("T")[0]
                                     )
                                   }`
                                 : task.status === "cancelled"
