@@ -20,6 +20,7 @@ import { EditTaskDrawer } from "@/components/dashboard/EditTaskDrawer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatDueDate, isTaskForToday } from "@/utils/utils";
+import { AddTaskDrawer } from "@/components/dashboard/AddTaskDrawer";
 
 export default function CalendarPage() {
   const {
@@ -29,6 +30,7 @@ export default function CalendarPage() {
     cancelledTask,
     deleteTask,
     pendingTask,
+    addTask,
   } = useTasks();
   const [date, setDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -46,6 +48,17 @@ export default function CalendarPage() {
       {/* 🔹 Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Calendar</h1>
+        <Button
+          className="w-1/2 md:w-auto"
+          onClick={() => setIsDrawerOpen(true)}
+        >
+          + Add Task
+        </Button>
+        <AddTaskDrawer
+          isOpen={isDrawerOpen}
+          onClose={() => setIsDrawerOpen(false)}
+          onSubmit={addTask}
+        />
       </div>
 
       <Tabs defaultValue="calendar">
