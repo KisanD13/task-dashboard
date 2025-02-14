@@ -12,43 +12,27 @@ import {
   CheckCircle2,
   Circle,
 } from "lucide-react";
-
-// Mock data - replace with real data later
-const tasks = [
-  {
-    id: 1,
-    title: "Team Meeting",
-    date: "2024-03-15",
-    time: "14:00",
-    type: "upcoming",
-    completed: false,
-  },
-  {
-    id: 2,
-    title: "Project Deadline",
-    date: "2024-03-20",
-    time: "18:00",
-    type: "upcoming",
-    completed: true,
-  },
-  // Add more tasks as needed
-];
+import { useTasks } from "@/context/TaskContext";
 
 export default function CalendarPage() {
-  const [date, setDate] = useState<Date | undefined>(new Date());
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
-    new Date()
+  const { tasks, updateTaskStatus } = useTasks();
+  const [date, setDate] = useState<Date>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+
+  // 🔹 Filter tasks based on selected date
+  const filteredTasks = tasks.filter(
+    (task) =>
+      new Date(task.dueDate).toDateString() === selectedDate.toDateString()
   );
 
   return (
     <div className="space-y-8">
+      {/* Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Calendar</h1>
-        <div className="flex gap-4">
-          <button className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-lg">
-            + Add Task
-          </button>
-        </div>
+        <button className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-lg">
+          + Add Task
+        </button>
       </div>
 
       <Tabs defaultValue="calendar" className="space-y-6">
@@ -57,14 +41,15 @@ export default function CalendarPage() {
           <TabsTrigger value="tasks">All Tasks</TabsTrigger>
         </TabsList>
 
+        {/* 📅 Calendar View */}
         <TabsContent value="calendar">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-            {/* Calendar Section */}
-            <Card className="md:col-span-8 p-6">
+          <div className="flex flex-col md:flex-row gap-6">
+            {/* 📅 Calendar Section */}
+            <Card className="w-full md:w-2/3 p-6">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h2 className="font-semibold">
-                    {date?.toLocaleString("default", {
+                    {date.toLocaleString("default", {
                       month: "long",
                       year: "numeric",
                     })}
@@ -72,7 +57,7 @@ export default function CalendarPage() {
                   <div className="flex gap-2">
                     <button
                       onClick={() =>
-                        setDate(new Date(date!.setMonth(date!.getMonth() - 1)))
+                        setDate(new Date(date.setMonth(date.getMonth() - 1)))
                       }
                       className="p-2 hover:bg-gray-100 rounded-full"
                     >
@@ -80,7 +65,7 @@ export default function CalendarPage() {
                     </button>
                     <button
                       onClick={() =>
-                        setDate(new Date(date!.setMonth(date!.getMonth() + 1)))
+                        setDate(new Date(date.setMonth(date.getMonth() + 1)))
                       }
                       className="p-2 hover:bg-gray-100 rounded-full"
                     >
@@ -89,47 +74,72 @@ export default function CalendarPage() {
                   </div>
                 </div>
 
-                <Calendar
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={setSelectedDate}
-                  className="rounded-md border"
-                />
+                {/* 📆 Calendar Component */}
+                <div className="flex justify-center">
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={(day) => {
+                      if (day) {
+                        setSelectedDate(day);
+                      }
+                    }}
+                    className="rounded-md border"
+                  />
+                </div>
               </div>
             </Card>
 
-            {/* Selected Date Tasks */}
-            <Card className="md:col-span-4 p-6">
+            {/* 📋 Selected Date Tasks */}
+            <Card className="w-full md:w-1/3 p-6">
               <div className="space-y-6">
-                <h2 className="font-semibold">
-                  Tasks for {selectedDate?.toLocaleDateString()}
+                <h2 className="font-semibold text-center">
+                  Tasks for {selectedDate.toLocaleDateString()}
                 </h2>
 
                 <div className="space-y-4">
-                  {tasks.map((task) => (
-                    <div
-                      key={task.id}
-                      className="flex items-start space-x-4 p-3 hover:bg-gray-50 rounded-lg transition"
-                    >
-                      <div className="flex-shrink-0">
-                        {task.type === "upcoming" ? (
-                          <Clock className="h-5 w-5 text-blue-500" />
-                        ) : (
-                          <CalendarIcon className="h-5 w-5 text-gray-500" />
-                        )}
-                      </div>
-                      <div className="flex-1 space-y-1">
-                        <p className="font-medium">{task.title}</p>
-                        <div className="flex items-center text-sm text-gray-500">
-                          <p>{new Date(task.date).toLocaleDateString()}</p>
-                          <span className="mx-2">•</span>
-                          <p>{task.time}</p>
+                  {filteredTasks.length > 0 ? (
+                    filteredTasks.map((task) => (
+                      <div
+                        key={task.id}
+                        className="flex items-start space-x-4 p-3 hover:bg-gray-50 rounded-lg transition"
+                      >
+                        <button
+                          onClick={() =>
+                            updateTaskStatus(
+                              task.id,
+                              task.status === "completed"
+                                ? "cancelled"
+                                : "completed"
+                            )
+                          }
+                          className="flex-shrink-0"
+                        >
+                          {task.status === "completed" ? (
+                            <CheckCircle2 className="h-5 w-5 text-green-500" />
+                          ) : (
+                            <Circle className="h-5 w-5 text-gray-300" />
+                          )}
+                        </button>
+                        <div className="flex-1 space-y-1">
+                          <p
+                            className={`font-medium ${
+                              task.status === "completed"
+                                ? "line-through text-gray-500"
+                                : ""
+                            }`}
+                          >
+                            {task.title}
+                          </p>
+                          <div className="flex items-center text-sm text-gray-500">
+                            <p>{new Date(task.dueDate).toLocaleDateString()}</p>
+                            <span className="mx-2">•</span>
+                            <p>{task.priority.toUpperCase()}</p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-
-                  {tasks.length === 0 && (
+                    ))
+                  ) : (
                     <p className="text-gray-500 text-center py-4">
                       No tasks scheduled for this day
                     </p>
@@ -140,6 +150,7 @@ export default function CalendarPage() {
           </div>
         </TabsContent>
 
+        {/* 📋 All Tasks Tab */}
         <TabsContent value="tasks">
           <Card className="p-6">
             <div className="space-y-6">
@@ -161,8 +172,18 @@ export default function CalendarPage() {
                     key={task.id}
                     className="flex items-center gap-4 p-4 hover:bg-gray-50 rounded-lg transition"
                   >
-                    <button className="flex-shrink-0">
-                      {task.completed ? (
+                    <button
+                      onClick={() =>
+                        updateTaskStatus(
+                          task.id,
+                          task.status === "completed"
+                            ? "cancelled"
+                            : "completed"
+                        )
+                      }
+                      className="flex-shrink-0"
+                    >
+                      {task.status === "completed" ? (
                         <CheckCircle2 className="h-5 w-5 text-green-500" />
                       ) : (
                         <Circle className="h-5 w-5 text-gray-300" />
@@ -171,17 +192,19 @@ export default function CalendarPage() {
                     <div className="flex-1">
                       <p
                         className={`font-medium ${
-                          task.completed ? "line-through text-gray-500" : ""
+                          task.status === "completed"
+                            ? "line-through text-gray-500"
+                            : ""
                         }`}
                       >
                         {task.title}
                       </p>
                       <div className="flex items-center text-sm text-gray-500">
                         <CalendarIcon className="h-4 w-4 mr-2" />
-                        <p>{new Date(task.date).toLocaleDateString()}</p>
+                        <p>{new Date(task.dueDate).toLocaleDateString()}</p>
                         <span className="mx-2">•</span>
                         <Clock className="h-4 w-4 mr-2" />
-                        <p>{task.time}</p>
+                        <p>{task.priority.toUpperCase()}</p>
                       </div>
                     </div>
                   </div>
