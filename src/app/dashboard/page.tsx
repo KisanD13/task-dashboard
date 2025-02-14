@@ -66,13 +66,21 @@ export default function DashboardPage() {
         <Tabs defaultValue="today" className="space-y-4">
           <TabsList className="hidden md:grid w-full grid-cols-3">
             <TabsTrigger value="today">
-              Today&apos;s Tasks ({todayTasks.length})
+              Today&apos;s Tasks (
+              {todayTasks.filter((task) => task.status !== "completed").length})
             </TabsTrigger>
             <TabsTrigger value="tomorrow">
-              Tomorrow ({tomorrowTasks.length})
+              Tomorrow (
+              {
+                tomorrowTasks.filter((task) => task.status !== "completed")
+                  .length
+              }
+              )
             </TabsTrigger>
             <TabsTrigger value="future">
-              Future Tasks ({futureTasks.length})
+              Future Tasks (
+              {futureTasks.filter((task) => task.status !== "completed").length}
+              )
             </TabsTrigger>
           </TabsList>
 

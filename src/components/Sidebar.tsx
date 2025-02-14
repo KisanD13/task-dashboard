@@ -105,9 +105,9 @@ export function Sidebar() {
         <SheetTrigger>
           <SheetTitle className="flex items-center justify-center">
             <Menu className="h-8 w-8 md:hidden ml-2 mt-2" />
-            <h1 className="text-2xl font-bold md:hidden absolute left-1/2 transform -translate-x-1/2 mt-2">
+            <span className="text-2xl font-bold md:hidden absolute left-1/2 transform -translate-x-1/2 mt-2">
               Task Manager
-            </h1>
+            </span>
           </SheetTitle>
         </SheetTrigger>
         <SheetContent side="left" className="p-0 w-72">
