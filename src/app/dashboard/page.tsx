@@ -15,21 +15,25 @@ export default function DashboardPage() {
   const { tasks, addTask } = useTasks();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(0, 0, 0, 0); // Reset to start of the day
+
+  // Define Future Date (Day After Tomorrow Onwards)
+  const future = new Date();
+  future.setDate(future.getDate() + 2);
+  future.setHours(0, 0, 0, 0);
+
   const todayTasks = tasks.filter(
     (task) =>
       new Date(task.dueDate).toDateString() === new Date().toDateString()
   );
 
   const tomorrowTasks = tasks.filter((task) => {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
     return new Date(task.dueDate).toDateString() === tomorrow.toDateString();
   });
 
   const futureTasks = tasks.filter((task) => {
-    const future = new Date();
-    future.setDate(future.getDate() + 2);
-    future.setHours(0, 0, 0, 0);
     return new Date(task.dueDate) >= future;
   });
 
@@ -81,7 +85,7 @@ export default function DashboardPage() {
           <TabsContent value="today">
             <TaskList
               title="Today's Tasks"
-              tasks={todayTasks}
+              tasks={todayTasks.filter((task) => task.status === "pending")}
               variant="today"
             />
           </TabsContent>
@@ -89,16 +93,43 @@ export default function DashboardPage() {
           <TabsContent value="tomorrow">
             <TaskList
               title="Tomorrow"
-              tasks={tomorrowTasks}
+              tasks={tomorrowTasks.filter((task) => task.status === "pending")}
               variant="tomorrow"
+              dueDate={tomorrow}
             />
           </TabsContent>
 
           <TabsContent value="future">
             <TaskList
               title="Future Tasks"
-              tasks={futureTasks}
+              tasks={futureTasks.filter((task) => task.status === "pending")}
               variant="future"
+              dueDate={future}
+            />
+          </TabsContent>
+        </Tabs>
+      </Card>
+
+      <Card className="p-6">
+        <Tabs defaultValue="completed" className="space-y-4">
+          <TabsList className=" grid w-full grid-cols-2">
+            <TabsTrigger value="completed">Completed</TabsTrigger>
+            <TabsTrigger value="cancelled">Cancelled</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="completed">
+            <TaskList
+              title="Completed Tasks"
+              tasks={tasks.filter((task) => task.status === "completed")}
+              variant="completed"
+            />
+          </TabsContent>
+
+          <TabsContent value="cancelled">
+            <TaskList
+              title="Cancelled Tasks"
+              tasks={tasks.filter((task) => task.status === "cancelled")}
+              variant="cancelled"
             />
           </TabsContent>
         </Tabs>
