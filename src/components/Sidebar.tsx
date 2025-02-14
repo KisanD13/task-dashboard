@@ -15,7 +15,6 @@ import {
   Calendar,
   Clock,
   BarChart2,
-  Settings,
   Menu,
 } from "lucide-react";
 import { useState } from "react";
@@ -44,12 +43,6 @@ const routes = [
     icon: BarChart2,
     href: "/analytics",
     color: "text-orange-700",
-  },
-  {
-    label: "Settings",
-    icon: Settings,
-    href: "/settings",
-    color: "text-gray-700",
   },
 ];
 
