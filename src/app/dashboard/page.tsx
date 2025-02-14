@@ -75,7 +75,7 @@ export default function DashboardPage() {
             >
               <DialogTrigger asChild>
                 <Button
-                  className="p-2 px-4 rounded"
+                  className="py-2 px-4 rounded"
                   size="lg"
                   onClick={() => setIsSearchDialogOpen(true)}
                 >
@@ -101,7 +101,7 @@ export default function DashboardPage() {
             </Dialog>
           </div>
           <Button
-            className="w-full md:w-auto"
+            className="w-full py-5 px-4 md:w-auto"
             onClick={() => setIsDrawerOpen(true)}
           >
             + Add Task

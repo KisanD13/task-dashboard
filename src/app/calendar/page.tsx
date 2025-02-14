@@ -265,7 +265,10 @@ export default function CalendarPage() {
                       const today = new Date();
                       today.setHours(0, 0, 0, 0); // Reset time for accurate comparison
 
-                      return taskDate.toDateString() === today.toDateString();
+                      return (
+                        taskDate.toLocaleDateString() ===
+                        today.toLocaleDateString()
+                      );
                     };
                     return (
                       <div key={task.id}>
@@ -390,7 +393,7 @@ export default function CalendarPage() {
                                     task.completedAt &&
                                     formatDueDate(
                                       task?.completedAt
-                                        .toDateString()
+                                        .toISOString()
                                         .split("T")[0]
                                     )
                                   }`
@@ -398,11 +401,11 @@ export default function CalendarPage() {
                                 ? `is cancelled on ${
                                     task.cancelledAt &&
                                     formatDueDate(
-                                      task?.cancelledAt.toDateString()
+                                      task?.cancelledAt.toLocaleDateString()
                                     )
                                   }`
                                 : `is scheduled for ${formatDueDate(
-                                    task.dueDate.toDateString().split("T")[0]
+                                    task.dueDate.toLocaleDateString()
                                   )}`}{" "}
                             </Badge>
                           </div>
