@@ -177,6 +177,8 @@ export default function HistoryPage() {
                                 ? new Date(item?.completedAt).toLocaleString()
                                 : "Unknown"
                             }`
+                          : item.status === "pending"
+                          ? "Task is still pending"
                           : `Cancelled at ${
                               item.cancelledAt
                                 ? new Date(item?.cancelledAt).toLocaleString()
