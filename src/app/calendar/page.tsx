@@ -400,7 +400,7 @@ export default function CalendarPage() {
                                     )
                                   }`
                                 : `is scheduled for ${formatDueDate(
-                                    task.dueDate.toDateString()
+                                    task.dueDate.toDateString().split("T")[0]
                                   )}`}{" "}
                             </Badge>
                           </div>
