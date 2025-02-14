@@ -1,14 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Edit, Check, X, Trash2 } from "lucide-react";
+import { Edit, Check, X, Trash2, Clock } from "lucide-react";
 import { useState } from "react";
 import { Task } from "@/types/task";
 import { EditTaskDrawer } from "./EditTaskDrawer";
 import { useTasks } from "@/context/TaskContext";
 
 export function TaskItem({ task }: { task: Task }) {
-  const { completeTask, cancelledTask, deleteTask } = useTasks();
+  const { completeTask, cancelledTask, deleteTask, pendingTask } = useTasks();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
@@ -52,6 +52,7 @@ export function TaskItem({ task }: { task: Task }) {
           <div className="flex gap-2 w-full md:w-auto">
             <Button
               variant="ghost"
+              className="bg-blue-200 hover:bg-blue-300 active:bg-blue-300"
               size="sm"
               onClick={(e) => {
                 e.stopPropagation();
@@ -64,6 +65,7 @@ export function TaskItem({ task }: { task: Task }) {
             </Button>
             <Button
               variant="ghost"
+              className="bg-green-200 hover:bg-green-300 active:bg-green-300"
               size="sm"
               onClick={(e) => {
                 e.stopPropagation();
@@ -73,8 +75,10 @@ export function TaskItem({ task }: { task: Task }) {
             >
               <Check className="h-4 w-4" />
             </Button>
+
             <Button
-              variant="ghost"
+              variant="default"
+              className="bg-red-200 hover:bg-red-300 active:bg-red-300"
               size="sm"
               onClick={(e) => {
                 e.stopPropagation();
@@ -84,9 +88,24 @@ export function TaskItem({ task }: { task: Task }) {
             >
               <X className="h-4 w-4" />
             </Button>
+
             <Button
               variant="ghost"
+              className="bg-yellow-200 hover:bg-yellow-300 active:bg-yellow-300"
               size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                pendingTask(task);
+              }}
+              title="Pending Task"
+            >
+              <Clock className="h-4 w-4" />
+            </Button>
+
+            <Button
+              variant="default"
+              size="sm"
+              className="bg-red-400 hover:bg-red-500 active:bg-red-500"
               onClick={(e) => {
                 e.stopPropagation();
                 deleteTask(task);

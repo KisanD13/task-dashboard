@@ -16,6 +16,7 @@ interface TasksContextType {
   completeTask: (completeTask: Task) => void;
   cancelledTask: (cancelledTask: Task) => void;
   deleteTask: (deleteTask: Task) => void;
+  pendingTask: (pendingTask: Task) => void;
 }
 
 const TasksContext = createContext<TasksContextType | undefined>(undefined);
@@ -60,6 +61,14 @@ export function TasksProvider({ children }: { children: ReactNode }) {
     );
   };
 
+  const pendingTask = (task: Task) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((t) =>
+        t.id === task.id ? { ...task, status: "pending" } : t
+      )
+    );
+  };
+
   const deleteTask = (task: Task) => {
     setTasks((prevTasks) => prevTasks.filter((t) => t.id !== task.id));
   };
@@ -73,6 +82,7 @@ export function TasksProvider({ children }: { children: ReactNode }) {
         completeTask,
         cancelledTask,
         deleteTask,
+        pendingTask,
       }}
     >
       {children}
