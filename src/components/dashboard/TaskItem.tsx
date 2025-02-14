@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Task } from "@/types/task";
 import { EditTaskDrawer } from "./EditTaskDrawer";
 import { useTasks } from "@/context/TaskContext";
+import { Badge } from "../ui/badge";
 
 export function TaskItem({ task }: { task: Task }) {
   const { completeTask, cancelledTask, deleteTask, pendingTask } = useTasks();
@@ -42,6 +43,10 @@ export function TaskItem({ task }: { task: Task }) {
               {task.title}
             </span>
           </div>
+
+          <Badge variant="outline" className={getStatusStyles()}>
+            {task.status.toUpperCase()}
+          </Badge>
 
           {/* Center Section: Description */}
           <div className="text-sm text-gray-500 w-full md:w-auto">
