@@ -9,7 +9,6 @@ import { useTasks } from "@/context/TaskContext";
 
 export function TaskItem({ task }: { task: Task }) {
   const { completeTask, cancelledTask } = useTasks();
-  const [isSelected, setIsSelected] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
@@ -20,33 +19,31 @@ export function TaskItem({ task }: { task: Task }) {
       case "cancelled":
         return "text-red-600";
       case "pending":
-        return isSelected ? "text-blue-600" : "text-foreground/70";
+        return "text-foreground/70";
     }
   };
 
   return (
     <>
       <div
-        className={`p-3 rounded-lg transition-colors cursor-pointer hover:bg-accent/50 ${
-          isSelected ? "bg-accent" : ""
-        }`}
-        onClick={() => setIsSelected(!isSelected)}
+        className={`p-3 rounded-lg transition-colors cursor-pointer hover:bg-accent/50`}
       >
         <div className={`flex items-center justify-between`}>
           <div className="flex items-center gap-3">
             <div
-              className={`w-4 h-4 rounded-full border-2 ${
-                isSelected ? "border-blue-600" : "border-gray-400"
-              } ${
-                task.status === "completed"
-                  ? "border-green-600 bg-green-600"
-                  : ""
-              } ${task.status === "cancelled" ? "border-red-600" : ""}`}
+              className={`w-4 h-4 rounded-full border-2 border-gray-400
+               ${
+                 task.status === "completed"
+                   ? "border-green-600 bg-green-600"
+                   : ""
+               } ${task.status === "cancelled" ? "border-red-600" : ""}`}
             />
             <span className={getStatusStyles()} title={task.description}>
               {task.title}
             </span>
           </div>
+
+          <div className="text-sm text-gray-500">{task.description}</div>
 
           <div className="flex gap-2">
             <Button
