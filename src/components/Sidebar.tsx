@@ -26,12 +26,12 @@ const routes = [
     href: "/dashboard",
     color: "text-sky-500",
   },
-  {
-    label: "Calendar",
-    icon: Calendar,
-    href: "/calendar",
-    color: "text-violet-500",
-  },
+  // {
+  //   label: "Calendar",
+  //   icon: Calendar,
+  //   href: "/calendar",
+  //   color: "text-violet-500",
+  // },
   {
     label: "History",
     icon: Clock,
