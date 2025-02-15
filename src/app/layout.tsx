@@ -8,6 +8,21 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Task Dashboard",
   description: "Task Management Dashboard",
+  generator: "Next.js",
+  manifest: "/manifest.json",
+  applicationName: "Task Dashboard",
+  themeColor: "#00ff00",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Task Dashboard",
+  },
+  icons: [
+    { rel: "icon", url: "/icons/taskM-192.png" },
+    { rel: "apple-touch-icon", url: "/icons/taskM-192.png" },
+  ],
+  viewport:
+    "width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no, viewport-fit=cover",
 };
 
 export default function RootLayout({
@@ -17,6 +32,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <meta name="theme-color" content="#ffffff" />
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="icon" href="/icons/taskM-192.png" />
+        <link rel="apple-touch-icon" href="/icons/taskM-192.png" />
+      </head>
       <body className={inter.className}>
         <TasksProvider>
           <div className="h-full relative">
