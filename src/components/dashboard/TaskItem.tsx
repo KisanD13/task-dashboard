@@ -16,6 +16,14 @@ import { EditTaskDrawer } from "./EditTaskDrawer";
 import { useTasks } from "@/context/TaskContext";
 import { Badge } from "../ui/badge";
 import { formatDueDate, isTaskForToday } from "@/utils/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
 
 export function TaskItem({
   task,
@@ -41,7 +49,7 @@ export function TaskItem({
   } = useTasks();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
-
+  const [confirmDeleteDialogOpen, setConfirmDeleteDialogOpen] = useState(false);
   const getStatusStyles = () => {
     switch (task.status) {
       case "completed":
@@ -88,6 +96,13 @@ export function TaskItem({
           <div className="text-sm text-gray-500 w-full md:w-auto">
             {task.description}
           </div>
+
+          {variant === "future" && task.status === "pending" && (
+            <Badge variant="outline" className={"text-yellow-600"}>
+              {`Task
+              is scheduled for ${formatDueDate(task.dueDate.toString())}`}{" "}
+            </Badge>
+          )}
 
           {/* Right Section: Action Buttons */}
           <div className="flex gap-2 w-full md:w-auto">
@@ -155,19 +170,57 @@ export function TaskItem({
               </Button>
             )}
 
-            <Button
-              variant="default"
-              size="sm"
-              className="bg-red-400 hover:bg-red-500 active:bg-red-500"
-              onClick={(e) => {
-                e.stopPropagation();
-                deleteTask(task);
-                onClose?.();
+            <Dialog
+              open={confirmDeleteDialogOpen}
+              onOpenChange={(open) => {
+                setConfirmDeleteDialogOpen(open);
               }}
-              title="Delete Task"
             >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+              <DialogTrigger asChild>
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="bg-red-400 hover:bg-red-500 active:bg-red-500"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setConfirmDeleteDialogOpen(true);
+                  }}
+                  title="Delete Task"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-h-[70vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="mb-4">
+                    Are you sure you want to delete this task?
+                  </DialogTitle>
+                  <DialogDescription></DialogDescription>
+                  <div className="flex gap-2 justify-center items-center mt-6">
+                    <Button
+                      variant="outline"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setConfirmDeleteDialogOpen(false);
+                      }}
+                      className="w-24 bg-gray-200 hover:bg-gray-300 active:bg-gray-300"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteTask(task);
+                        onClose?.();
+                      }}
+                      className="w-24 bg-red-400 hover:bg-red-500 active:bg-red-500"
+                    >
+                      Delete Task
+                    </Button>
+                  </div>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
           </div>
 
           {variant === "search" && (
