@@ -10,13 +10,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
-import {
-  LayoutDashboard,
-  Calendar,
-  Clock,
-  BarChart2,
-  Menu,
-} from "lucide-react";
+import { LayoutDashboard, Clock, BarChart2, Menu } from "lucide-react";
 import { useState } from "react";
 
 const routes = [
