@@ -185,15 +185,15 @@ export function TaskItem({
               {task.status === "completed"
                 ? `is completed on ${
                     task.completedAt &&
-                    formatDueDate(task?.completedAt.toDateString())
+                    formatDueDate(task?.completedAt.toString())
                   }`
                 : task.status === "cancelled"
                 ? `is cancelled on ${
                     task.cancelledAt &&
-                    formatDueDate(task?.cancelledAt.toDateString())
+                    formatDueDate(task?.cancelledAt.toString())
                   }`
                 : `is scheduled for ${formatDueDate(
-                    task.dueDate.toDateString()
+                    task.dueDate.toString()
                   )}`}{" "}
             </Badge>
           )}

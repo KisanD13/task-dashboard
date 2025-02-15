@@ -29,7 +29,7 @@ export function EditTaskDrawer({
   const [task, setTask] = useState<Task | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [dueDate, setDueDate] = useState<Date>(new Date());
+  const [dueDate, setDueDate] = useState("");
   const [priority, setPriority] = useState<Task["priority"]>("medium");
 
   useEffect(() => {
@@ -40,7 +40,7 @@ export function EditTaskDrawer({
         setTask(existingTask);
         setTitle(existingTask.title);
         setDescription(existingTask.description || "");
-        setDueDate(new Date(existingTask.dueDate));
+        setDueDate(new Date(existingTask.dueDate).toISOString().split("T")[0]);
         setPriority(existingTask.priority);
       }
     }
@@ -56,7 +56,7 @@ export function EditTaskDrawer({
       description,
       dueDate,
       priority,
-      updatedAt: new Date(),
+      updatedAt: new Date().toISOString(),
     };
 
     updateTask(updatedTask);
@@ -97,8 +97,8 @@ export function EditTaskDrawer({
             <Input
               id="dueDate"
               type="date"
-              value={dueDate ? dueDate.toISOString().split("T")[0] : ""}
-              onChange={(e) => setDueDate(new Date(e.target.value))}
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
               required
             />
           </div>

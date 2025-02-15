@@ -87,9 +87,15 @@ export function TasksProvider({ children }: { children: ReactNode }) {
           ? {
               ...task,
               status: newStatus,
-              updatedAt: new Date(),
-              completedAt: newStatus === "completed" ? new Date() : undefined,
-              cancelledAt: newStatus === "cancelled" ? new Date() : undefined,
+              updatedAt: new Date().toISOString(),
+              completedAt:
+                newStatus === "completed"
+                  ? new Date().toISOString()
+                  : undefined,
+              cancelledAt:
+                newStatus === "cancelled"
+                  ? new Date().toISOString()
+                  : undefined,
             }
           : task
       )

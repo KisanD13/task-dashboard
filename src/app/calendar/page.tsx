@@ -19,7 +19,7 @@ import { useTasks } from "@/context/TaskContext";
 import { EditTaskDrawer } from "@/components/dashboard/EditTaskDrawer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { formatDueDate, isTaskForToday } from "@/utils/utils";
+import { isTaskForToday } from "@/utils/utils";
 import { AddTaskDrawer } from "@/components/dashboard/AddTaskDrawer";
 
 export default function CalendarPage() {
@@ -263,8 +263,7 @@ export default function CalendarPage() {
                     const isTaskForToday = () => {
                       const taskDate = new Date(task.dueDate);
                       const today = new Date();
-                      today.setHours(0, 0, 0, 0); // Reset time for accurate comparison
-
+                      today.setHours(0, 0, 0, 0);
                       return (
                         taskDate.toLocaleDateString() ===
                         today.toLocaleDateString()
@@ -391,22 +390,16 @@ export default function CalendarPage() {
                               {task.status === "completed"
                                 ? `is completed on ${
                                     task.completedAt &&
-                                    formatDueDate(
-                                      task?.completedAt
-                                        .toISOString()
-                                        .split("T")[0]
-                                    )
+                                    new Date(task?.completedAt).toLocaleString()
                                   }`
                                 : task.status === "cancelled"
                                 ? `is cancelled on ${
                                     task.cancelledAt &&
-                                    formatDueDate(
-                                      task?.cancelledAt.toLocaleDateString()
-                                    )
+                                    new Date(task?.cancelledAt).toLocaleString()
                                   }`
-                                : `is scheduled for ${formatDueDate(
-                                    task.dueDate.toLocaleDateString()
-                                  )}`}{" "}
+                                : `is scheduled for ${new Date(
+                                    task.dueDate
+                                  ).toLocaleString()}`}{" "}
                             </Badge>
                           </div>
                         </div>

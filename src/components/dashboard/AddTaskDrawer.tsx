@@ -27,11 +27,11 @@ export function AddTaskDrawer({
 }: AddTaskDrawerProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [dueDate, setDueDate] = useState<Date | null>(null);
+  const [dueDate, setDueDate] = useState("");
   const [priority, setPriority] = useState<Task["priority"]>("medium");
 
   useEffect(() => {
-    setDueDate(new Date());
+    setDueDate(new Date().toISOString().split("T")[0]);
   }, []);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -42,11 +42,11 @@ export function AddTaskDrawer({
       id: crypto.randomUUID(),
       title,
       description,
-      dueDate: new Date(dueDate),
+      dueDate,
       status: "pending",
       priority,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
     onSubmit(newTask);
@@ -54,7 +54,7 @@ export function AddTaskDrawer({
     // Reset form
     setTitle("");
     setDescription("");
-    setDueDate(new Date());
+    setDueDate(new Date().toISOString().split("T")[0]);
     setPriority("medium");
   };
 
@@ -95,9 +95,9 @@ export function AddTaskDrawer({
             <Input
               id="dueDate"
               type="date"
-              value={dueDate ? dueDate.toISOString().split("T")[0] : ""}
+              value={dueDate}
               min={today}
-              onChange={(e) => setDueDate(new Date(e.target.value))}
+              onChange={(e) => setDueDate(e.target.value)}
               required
             />
           </div>
