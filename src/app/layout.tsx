@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   generator: "Next.js",
   manifest: "/manifest.json",
   applicationName: "Task Dashboard",
-  themeColor: "#00ff00",
+  // themeColor: "#00ff00",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
@@ -21,9 +21,21 @@ export const metadata: Metadata = {
     { rel: "icon", url: "/icons/taskM-192.png" },
     { rel: "apple-touch-icon", url: "/icons/taskM-192.png" },
   ],
-  viewport:
-    "width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no, viewport-fit=cover",
+  // viewport:
+  //   "width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no, viewport-fit=cover",
 };
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  minimumScale: 1,
+  maximumScale: 1,
+  userScalable: "no",
+  shrinkToFit: "no",
+  viewportFit: "cover",
+};
+
+export const themeColor = "#00ff00";
 
 export default function RootLayout({
   children,
