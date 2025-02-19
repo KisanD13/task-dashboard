@@ -95,7 +95,7 @@ export function Sidebar() {
           <SheetTitle className="flex items-center justify-center">
             <Menu className="h-8 w-8 md:hidden ml-2 mt-2" />
             <span className="text-2xl font-bold md:hidden absolute left-1/2 transform -translate-x-1/2 mt-2">
-              Task Manager
+              ZenTask Flow
             </span>
           </SheetTitle>
         </SheetTrigger>
